@@ -37,7 +37,7 @@ You're reading it and here is a link to my [project code](https://github.com/mat
 
 ####1. Explain how (and identify where in your code) you extracted HOG features from the training images.
 
-The code for this step is contained in the first, third (in method `get_hog_features`) and sicth code cells of the IPython notebook.
+The code for this step is contained in the second, third (in method `get_hog_features`) and sixth code cells of the IPython notebook.
 
 I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
 
@@ -98,26 +98,14 @@ Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spat
 ### Video Implementation
 
 ####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
-Here's a [link to my video result](./test.mp4)
+Here's a [link to my video result](./output.mp4)
 
 
 ####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
+I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions (refer to the second last code cell).  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  The helper functions `apply_thrshold()` and `raw_labeled_bbox()` helped me here (code cell thirteen)
 
-Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
-
-### Here are six frames and their corresponding heatmaps:
-
-
-
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-
-
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
-
-
-
+For smoothing i used `collections.deque(maxlen=10)` this helped me to take the heatmap sum over the last 10 iterations and applied the threshold after that.
 
 ---
 
@@ -132,6 +120,6 @@ A better approach would be to sue grid search for parameters. This technique can
 
 The sliding window approach resulted in a very poor perfomance as for each frame it took nearly one and a half a second to find the cars, regarding a video steram of several thousand images this is much too long. I used an area of interest recucing the window search on an area in front of the view (from 400 to 650 pixles in y direction). This reduced the computational time. But seems not quite enough. So i used an approach pointed out in the walkthrough that. Here instead of sliding windows in the image and then apply the hog extraction we do it voce versa. First the HOg is calculated for the whole image and then subsampling on the sliding windows is done. This improves the perfomrance a lot.
 
-What could also lad to some noise is the switch between sunlight and shadows combined with different road patterns. This could lead to noise as well. We could avoid this by using some flexible color space calculation.
+The switch between sunlight and shadows could also lead to some noise. We could try avoid this by using some flexible color space calculation.
 
 A `Vehicle` class could be used to track information of each found vehicle so that the whole finding and tracking process is much more robust. We could calculate findings and lost of this vehicle in average of sevral timespans we could calculate avera window sizes to avoid flipping windows evene when we found a vehicle. There are a lot of approaches to smoothen the detection and tracking process that are not applied in this notebook.

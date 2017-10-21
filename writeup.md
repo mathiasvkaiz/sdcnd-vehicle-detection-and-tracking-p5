@@ -125,5 +125,13 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+The approach i took is a very basic one. First i used brute force techniques to get good parameter settings based on cell sizes, block sizes and so on. Also the window size and overlap was tried out together in combination with spatial sizes and histogram bins.
 
+A better approach would be to sue grid search for parameters. This technique can be applied on several classifiers (especially the SVM one) and helps to find best parameter combinations by defining a range of parameter sets and then computes for each set the best score.
+
+
+The sliding window approach resulted in a very poor perfomance as for each frame it took nearly one and a half a second to find the cars, regarding a video steram of several thousand images this is much too long. I used an area of interest recucing the window search on an area in front of the view (from 400 to 650 pixles in y direction). This reduced the computational time. But seems not quite enough. So i used an approach pointed out in the walkthrough that. Here instead of sliding windows in the image and then apply the hog extraction we do it voce versa. First the HOg is calculated for the whole image and then subsampling on the sliding windows is done. This improves the perfomrance a lot.
+
+What could also lad to some noise is the switch between sunlight and shadows combined with different road patterns. This could lead to noise as well. We could avoid this by using some flexible color space calculation.
+
+A `Vehicle` class could be used to track information of each found vehicle so that the whole finding and tracking process is much more robust. We could calculate findings and lost of this vehicle in average of sevral timespans we could calculate avera window sizes to avoid flipping windows evene when we found a vehicle. There are a lot of approaches to smoothen the detection and tracking process that are not applied in this notebook.

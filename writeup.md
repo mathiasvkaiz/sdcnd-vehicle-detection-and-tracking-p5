@@ -15,9 +15,10 @@ The goals / steps of this project are the following:
 * Estimate a bounding box for vehicles detected.
 
 [//]: # (Image References)
-[image1]: ./examples/car_not_car.png
-[image2]: ./examples/HOG_example.jpg
-[image3]: ./examples/sliding_windows.jpg
+[image1]: ./car_non_car.jpg
+[image2]: ./hog_examples.jpg
+[image3]: ./code_classifier.jpg
+
 [image4]: ./examples/sliding_window.jpg
 [image5]: ./examples/bboxes_and_heat.png
 [image6]: ./examples/labels_map.png
@@ -46,18 +47,30 @@ I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an 
 
 I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
 
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
+Here is an example using the `RGB` color space and HOG parameters of `orientations=6`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
 
 
 ![alt text][image2]
 
 ####2. Explain how you settled on your final choice of HOG parameters.
 
-I tried various combinations of parameters and...
+I tried various combinations of parameters and came up to following parameters.
+
+- color_space: YCrCb seems to be far better then the other color spaces, as RGB was the worst.
+- orient: According to a pedestrian detection whitepaper the 9 seems to give the best results
+- pix_per_cell: Defines the cell size for computing each gradient histogram. So i needed to choose between good results and good performance where 8 has fitted best for me
+- cell_per_block: Defines the local histogram normalization in each cell. It was good combination with 8 cpix_per_cell to have 2 cell_per_block
+- hog_channel: I used all hog channels to get best results as we have a combination of individual channels
+
 
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
-I trained a linear SVM using...
+I trained a linear SVM (placed in code cell five) based on skit.learn training on all given cars and non-cars `cars` and `non_cars` lists and using the helper function `extract_features()`. in this helper function i iterate over all images. First i do a copy of each image. After that i applied color conversion `COLOR_RGB2YCrCb` as the original image is in RGB. After that i applied `spatial_bin()` to convert the image into a feature vector. After that i applied `color_hist()` on the feature_vector image to compute color histograms for each channel separately and combine them into one feature vector.
+The two different feature vectors (spatial and color) are combined to one big feature vector. This vector is used to train the SVM classifier.
+
+Following you can see the code snippet where all this happens
+
+![alt text][image3]
 
 ###Sliding Window Search
 

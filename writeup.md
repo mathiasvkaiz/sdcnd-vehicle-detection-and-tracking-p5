@@ -18,7 +18,7 @@ The goals / steps of this project are the following:
 [image1]: car_non_car.png
 [image2]: hog_examples.png
 [image3]: code_classifier.png
-[image4]: windows.jpg
+[image4]: windows.png
 [image5]: code_windows.png
 [image6]: windows_result.png
 
